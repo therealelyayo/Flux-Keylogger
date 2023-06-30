@@ -25,3 +25,7 @@
 * go to http://you.host/flux.php
 * click build
 * Now inject script tag to other documents
+* Change Password 
+
+![pass](pass.png)
+

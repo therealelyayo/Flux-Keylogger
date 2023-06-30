@@ -230,7 +230,7 @@
    </body>
 </html>
 <?php } else {
-   $PASSSWORD = "senha";
+   $PASSSWORD = "password";
          // Usuário não logado, verificar a senha
          if (isset($_POST['senha']) && $_POST['senha'] === $PASSSWORD) {
              // Senha correta, definir sessão e redirecionar para a página logada

